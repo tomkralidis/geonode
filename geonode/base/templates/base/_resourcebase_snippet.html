@@ -8,7 +8,9 @@
         {% endverbatim %}{% if request.user.is_authenticated %}
         <button class="btn btn-default btn-xs pull-right" ng-click="feature_select($event)">Select</button>
         {% endif %}{% verbatim %}
-        <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
+        <h4><a href="{{ item.detail_url }}">{{ item.title }}</a> <a class="fa fa-file-text-o" href="{{ item.links.metadata }}"></a></h4>
+        <p ng-show="item.type == 'Raster'"><a class="btn-sm btn-warning">Raster</a></p>
+        <p ng-show="item.type == 'Vector'"><a class="btn-sm btn-danger">Vector</a></p>
         <p>{{ item.category__gn_description }} <span class="owner">by <a href="/people/profile/{{ item.owner__username }}">{{ item.owner__username }}</a></span></p>
         <p class="abstract">{{ item.abstract }}</p>
         <p class="actions">
@@ -22,7 +24,18 @@
           <a ng-if="item.detail_url.indexOf('/maps/') > -1" 
             class="pull-right" href="/maps/{{item.id}}/view">
             <i class="fa fa-map-marker"></i>View Map</a>
-          </p>
+        </p>
+        <p class="links">
+          <a href="{{ item.links.wms }}" class="btn-sm btn-primary">WMS</a>
+          <a ng-show="item.type == 'Vector'" href="{{ item.links.wfs }}" class="btn-sm btn-primary">WFS</a>
+          <a ng-show="item.type == 'Raster'" href="{{ item.links.wcs }}" class="btn-sm btn-primary">WCS</a>
+          <a href="{{ item.links.pdf }}" class="btn-sm btn-info">PDF</a>
+          <a href="{{ item.links.kml }}" class="btn-sm btn-info">KML</a>
+          <a ng-show="item.type == 'Vector'" href="{{ item.links.shapefile }}" class="btn-sm btn-success">Shapefile</a>
+          <a ng-show="item.type == 'Vector'" href="{{ item.links.csv}}" class="btn-sm btn-success">CSV</a>
+          <a ng-show="item.type == 'Vector'" href="{{ item.links.geojson}}" class="btn-sm btn-success">GeoJSON</a>
+          <a ng-show="item.type == 'Vector'" href="{{ item.links.gml}}" class="btn-sm btn-success">GML</a>
+        </p>
       </div>
     </div>
   </article>

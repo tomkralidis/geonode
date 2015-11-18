@@ -458,6 +458,34 @@ class CommonModelApi(ModelResource):
                 list):
             data['objects'] = list(data['objects'].values(*VALUES))
 
+        # add links to response
+        list_of_ids = [x['uuid'] for x in data['objects']]
+        list_of_links = ResourceBase.objects.filter(uuid__in=list_of_ids)
+
+        for obj in data['objects']:
+            links = list_of_links.filter(uuid=obj['uuid'])[0].link_set
+
+            metadata_url = links.filter(link_type='metadata', name='ISO')[0].url
+            wms_url = links.filter(link_type='OGC:WMS')[0].url
+            pdf_url = links.filter(name='PDF')[0].url
+            kml_url = links.filter(name='KML')[0].url
+            obj['links'] = {
+                'metadata': metadata_url,
+                'wms': wms_url,
+                'pdf': pdf_url,
+                'kml': kml_url,
+            }
+            try:  # vector
+                obj['links']['wfs'] = links.filter(link_type='OGC:WFS')[0].url
+                obj['links']['shapefile'] = links.filter(name='Zipped Shapefile')[0].url
+                obj['links']['csv'] = links.filter(name='CSV')[0].url
+                obj['links']['geojson'] = links.filter(name='GeoJSON')[0].url
+                obj['links']['gml'] = links.filter(name='GML 3.1.1')[0].url
+                obj['type'] = 'Vector'
+            except IndexError:  # raster
+                obj['links']['wcs'] = links.filter(link_type='OGC:WCS')[0].url
+                obj['type'] = 'Raster'
+
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
 
