@@ -593,6 +593,11 @@ PYCSW = {
             'contact_name': 'Organization Name',
             'contact_email': 'Email Address',
             'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
+        },
+        'manager': {
+            'transactions': 'true',
+            'allowed_ips': '127.0.0.1',
+            #'csw_harvest_pagesize=10',
         }
     }
 }

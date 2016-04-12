@@ -671,6 +671,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         )
 
 
+class GenericResource(ResourceBase):
+    remote = models.BooleanField(default=False)
+
+#class GenericResourceManager(ResourceBaseManager):
+#    def __init__(self):
+#        models.Manager.__init__(self)
+
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type
     """

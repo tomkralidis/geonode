@@ -39,7 +39,7 @@ CONFIGURATION = {
         #  'loglevel': 'DEBUG',
         #  'logfile': '/tmp/pycsw.log',
         #  'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
-        #  'pretty_print': 'true',
+          'pretty_print': 'true',
         #  'domainquerytype': 'range',
         'domaincounts': 'true',
         'profiles': 'apiso,ebrim',
@@ -127,10 +127,10 @@ class CatalogueBackend(GenericCatalogueBackend):
         os.environ['QUERY_STRING'] = ''
 
         # init pycsw
-        csw = server.Csw(config)
+        csw = server.Csw(config, version='2.0.2')
 
         # fake HTTP method
-        csw.requesttype = 'POST'
+        csw.requesttype = 'GET'
 
         # fake HTTP request parameters
         if identifier is None:  # it's a GetRecords request
@@ -139,6 +139,8 @@ class CatalogueBackend(GenericCatalogueBackend):
                 formats.append(METADATA_FORMATS[f][0])
 
             csw.kvp = {
+                'service': 'CSW',
+                'version': '2.0.2',
                 'elementsetname': 'full',
                 'typenames': formats,
                 'resulttype': 'results',
@@ -152,7 +154,10 @@ class CatalogueBackend(GenericCatalogueBackend):
             response = csw.getrecords()
         else:  # it's a GetRecordById request
             csw.kvp = {
-                'id': [identifier],
+                'service': 'CSW',
+                'version': '2.0.2',
+                'request': 'GetRecordById',
+                'id': identifier,
                 'outputschema': 'http://www.isotc211.org/2005/gmd',
             }
             # FIXME(Ariel): Remove this try/except block when pycsw deals with
