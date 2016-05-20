@@ -21,7 +21,7 @@
 import json
 import os
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
@@ -37,6 +37,23 @@ def csw_global_dispatch(request):
     # else, redirect to the URL of the non-pycsw_local backend
     if settings.CATALOGUE['default']['ENGINE'] != 'geonode.catalogue.backends.pycsw_local':
         return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
+
+# TODO: add logic for authentication/authorization
+#
+#    msg = None
+#
+#    if any(word in request.body for word in ['Harvest ', 'Transaction ']):
+#        if not SOME_AUTHENTICATED_TEST:
+#            msg = 'Not authenticated'
+#        if not SOME_AUTHORIZATION_TEST:
+#            msg = 'Not authorized'
+#
+#        if msg is not None:
+#            template = loader.get_template('catalogue/csw-2.0.2-exception.xml')
+#            context = RequestContext(request, {
+#                'exception_text': msg
+#            })
+#            response = HttpResponseForbidden(template.render(context), content_type='application/xml')
 
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
 
@@ -55,7 +72,10 @@ def csw_global_dispatch(request):
     if isinstance(content, list):  # pycsw 2.0+
         content = content[1]
 
-    return HttpResponse(content, content_type=csw.contenttype)
+    response = HttpResponse(content, content_type=csw.contenttype)
+
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 @csrf_exempt

@@ -595,8 +595,9 @@ PYCSW = {
             'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
         },
         'manager': {
+        # authentication/authorization is handled by Django
             'transactions': 'true',
-            'allowed_ips': '127.0.0.1',
+            'allowed_ips': '*',
             #'csw_harvest_pagesize=10',
         }
     }
